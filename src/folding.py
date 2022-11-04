@@ -1,7 +1,50 @@
 import numpy as np
 
+# import matplotlib
+# import matplotlib.pyplot as plt
+# matplotlib.use("qt5agg")
 
-def classical_fold(timestamps, values, periods, bins=10):
+
+def get_periods(timestamps, min_period, bins=20):
+    """
+    Calculate the periods that are appropriate for the given timestamps,
+    based on the minimum period and the number of bins.
+
+    Parameters
+    ----------
+    timestamps: np.array, 1D, floats
+        the times when the values were sampled.
+    min_period: scalar float
+        the minimum period to be used for the folding.
+    bins: scalar integer
+        the number of phase bins that cover the period.
+        Default=20, i.e., phase interval of 0.05 of the period.
+
+    Returns
+    -------
+    periods: np.array, 1D, floats
+        the periods onto which the folds are calculated,
+        e.g., the time on which we calculate the modulu
+        for the different timestamps.
+    """
+
+    # the time interval between the first and last sample
+    dt = max(timestamps) - min(timestamps)
+
+    max_period = min_period * (1 + 1 / bins)
+    min_freq = 1 / max_period
+    max_freq = 1 / min_period
+
+    phase_width = min_period / bins
+    df = phase_width / dt  # df*dt = phase_width
+
+    freqs = np.arange(max_freq, min_freq - df, -df)
+    periods = 1 / freqs
+
+    return periods
+
+
+def classical_fold(timestamps, values, periods, bins=20):
     """
     Fold the "values" measured at "timestamps" over
     the different "periods" into a number of discrete bins.
@@ -58,12 +101,12 @@ def classical_fold(timestamps, values, periods, bins=10):
 
     for (i, p) in enumerate(periods):
         # edges of the phase bins in units of time
-        phase_bin_edges = np.linspace(0, p, bins)
+        phase_bin_edges = np.linspace(0, p, bins + 1)
 
         for (j, t) in enumerate(timestamps):
             # the index for the left edge ABOVE/EQUAL to which this sample goes
             idx = np.searchsorted(phase_bin_edges, t % p, side="right") - 1
-            folded_values[:, p, idx] += values[:, j]
+            folded_values[:, i, idx] += values[:, j]
 
     return folded_values
 
