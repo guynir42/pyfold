@@ -1,10 +1,5 @@
 import numpy as np
 
-import matplotlib
-import matplotlib.pyplot as plt
-
-matplotlib.use("qt5agg")
-
 
 def make_timestamps(length=10, time_scatter=0, dropout=0):
     """
@@ -210,6 +205,11 @@ def sinus_series(length=20, period=4, time_offset=2, time_scatter=0, dropout=0):
 
 
 if __name__ == "__main__":
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+    matplotlib.use("qt5agg")
+
     number = 200
     period = 84
 
