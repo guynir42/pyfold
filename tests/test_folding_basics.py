@@ -32,7 +32,7 @@ def test_few_hot_series():
     assert abs(np.mean(dt) - period) <= 1e-2
 
 
-def test_folding_few_hot(few_hot_series):
+def test_folding_few_hot():
     number = 20
     period = 4.0
     bins = 10
